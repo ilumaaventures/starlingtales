@@ -1,0 +1,241 @@
+/* Custom Styling and Theme Tokens for Starling Tales Storefront */
+
+/* :root {
+  --color-cream: #faf6f0;
+  --color-cream-dark: #eae3d2;
+  --color-gold: #c5a880;
+  --color-blue-soft: #7b94a4;
+  --color-blue-light: #f0f4f6;
+  --color-blue-muted: #d2dce0;
+  --color-brown-warm: #8b7e74;
+  --color-text-dark: #2c3e35;
+  --color-text-body: #4a4a4a;
+  --color-text-muted: #8e9591;
+  --color-danger: #c85c5c;
+} */
+:root {
+  /* Backgrounds - More Bright */
+  --color-cream: #fffefc;
+  --color-cream-dark: #f8f5f0;
+
+  /* Accent Colors */
+  --color-gold: #d0ae86;
+  --color-blue-soft: #8aa4b4;
+  --color-blue-light: #f8fbfc;
+  --color-blue-muted: #e6edf0;
+
+  /* Text */
+  --color-brown-warm: #9a8d82;
+  --color-text-dark: #37463f;
+  --color-text-body: #5b5b5b;
+  --color-text-muted: #a2aaa5;
+
+  /* Status */
+  --color-danger: #d56a6a;
+}
+/* Custom Palette Utility Classes */
+.bg-cream {
+  background-color: var(--color-cream);
+}
+.text-cream {
+  color: var(--color-cream);
+}
+.border-cream-dark {
+  border-color: var(--color-cream-dark);
+}
+.bg-cream-dark\/55 {
+  background-color: rgba(234, 227, 210, 0.55);
+}
+.bg-cream\/12 {
+  background-color: rgba(250, 246, 240, 0.12);
+}
+.bg-cream\/0 {
+  background-color: rgba(250, 246, 240, 0);
+}
+
+.bg-gold {
+  background-color: var(--color-gold);
+}
+.text-gold {
+  color: var(--color-gold);
+}
+
+.text-blue-soft {
+  color: var(--color-blue-soft);
+}
+.bg-blue-soft {
+  background-color: var(--color-blue-soft);
+}
+.hover\:bg-blue-soft:hover {
+  background-color: var(--color-blue-soft);
+}
+.focus-visible\:bg-blue-soft:focus-visible {
+  background-color: var(--color-blue-soft);
+}
+.bg-blue-light {
+  background-color: var(--color-blue-light);
+}
+.bg-blue-light\/20 {
+  background-color: rgba(240, 244, 246, 0.2);
+}
+.hover\:bg-blue-light:hover {
+  background-color: var(--color-blue-light);
+}
+.focus-visible\:bg-blue-light:focus-visible {
+  background-color: var(--color-blue-light);
+}
+.border-blue-muted {
+  border-color: var(--color-blue-muted);
+}
+.border-blue-soft\/50 {
+  border-color: rgba(123, 148, 164, 0.5);
+}
+
+.bg-brown-warm {
+  background-color: var(--color-brown-warm);
+}
+.text-brown-warm {
+  color: var(--color-brown-warm);
+}
+
+.text-text-dark {
+  color: var(--color-text-dark);
+}
+.border-text-dark {
+  border-color: var(--color-text-dark);
+}
+.bg-text-dark {
+  background-color: var(--color-text-dark);
+}
+.hover\:bg-text-dark:hover {
+  background-color: var(--color-text-dark);
+}
+.focus-visible\:bg-text-dark:focus-visible {
+  background-color: var(--color-text-dark);
+}
+.bg-text-dark\/45 {
+  background-color: rgba(44, 62, 53, 0.45);
+}
+
+.text-text-body {
+  color: var(--color-text-body);
+}
+.text-text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+.fill-danger {
+  fill: var(--color-danger);
+}
+.bg-danger {
+  background-color: var(--color-danger);
+}
+.hover\:text-danger:hover {
+  color: var(--color-danger);
+}
+.focus-visible\:text-danger:focus-visible {
+  color: var(--color-danger);
+}
+.hover\:border-danger:hover {
+  border-color: var(--color-danger);
+}
+.focus-visible\:border-danger:focus-visible {
+  border-color: var(--color-danger);
+}
+
+/* Poetic Typography Styles */
+.font-serif-poetic {
+  font-family:
+    "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  font-style: italic;
+}
+
+.font-display {
+  font-family: "Playfair Display", Georgia, Cambria, serif;
+}
+
+.font-script {
+  font-family: "Great Vibes", "Alex Brush", cursive;
+}
+
+.font-handwriting {
+  font-family: "Caveat", cursive;
+}
+
+/* Vintage Paper & Stamp Utilities */
+.vintage-stamp {
+  background-color: #FAF6F0;
+  border: 2px dashed #D5C7B2;
+  box-shadow: 0 4px 14px rgba(60, 47, 35, 0.08);
+}
+
+.torn-paper-edge {
+  position: relative;
+  background-color: #FAF7F2;
+  background-image: radial-gradient(#E8DFC8 0.75px, transparent 0.75px);
+  background-size: 14px 14px;
+}
+
+/* Custom Micro-Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.28s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Layout Hover Transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.duration-220 {
+  transition-duration: 220ms;
+}
+.duration-350 {
+  transition-duration: 350ms;
+}
+.hover\:-translate-y-1\.25:hover {
+  transform: translateY(-0.3125rem);
+}
+.hover\:scale-104:hover {
+  transform: scale(1.04);
+}
+.hover\:scale-108:hover {
+  transform: scale(1.08);
+}
+.focus-visible\:scale-108:focus-visible {
+  transform: scale(1.08);
+}
+.group:hover .group-hover\:translate-y-0 {
+  transform: translateY(0);
+}
+.group-focus-within .group-focus-within\:translate-y-0 {
+  transform: translateY(0);
+}
+.group-hover\:scale-104 {
+  transform: scale(1.04);
+}
