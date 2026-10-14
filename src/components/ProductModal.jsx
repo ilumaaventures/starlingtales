@@ -3,6 +3,7 @@ import Icon from "./Icon";
 import { formatPrice } from "../constants/constants";
 import { useStore } from "../context/StoreContext";
 import baseApi from "../services/baseApi";
+import ProductReviewsSection from "./ProductReviewsSection";
 
 export default function ProductModal({
   product,

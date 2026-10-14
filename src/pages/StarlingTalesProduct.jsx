@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../styles/StarlingTales.css";
 import { useStore } from "../context/StoreContext";
 import toast from "react-hot-toast";
-import { navLinks, formatPrice, PRODUCTS } from "../constants/constants";
+import { navLinks, formatPrice } from "../constants/constants";
+import { ProductGridSkeleton } from "../components/StarlingSkeletons";
 import Icon from "../components/Icon";
 import ProductCard from "../components/ProductCard";
 import ProductModal from "../components/ProductModal";
@@ -15,6 +16,8 @@ export default function StarlingTalesProduct() {
   const {
     products,
     categories: storeCategories,
+    loading = false,
+    isProductsLoading = false,
     cartItems = [],
     wishlistItems = [],
     addToCart,
@@ -23,7 +26,7 @@ export default function StarlingTalesProduct() {
     toggleWishlist,
     isCartOpen,
     setIsCartOpen,
-  } = useStore();
+  } = useStore() || {};
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [quickViewId, setQuickViewId] = useState(null);
@@ -33,7 +36,7 @@ export default function StarlingTalesProduct() {
     if (Array.isArray(products) && products.length > 0) {
       return products;
     }
-    return PRODUCTS || [];
+    return [];
   }, [products]);
 
   // Map store categories by ID and name (never exposing raw 24-char hex IDs)
@@ -355,11 +358,6 @@ export default function StarlingTalesProduct() {
 
   return (
     <div className="min-h-screen bg-cream text-text-dark font-sans selection:bg-blue-light selection:text-blue-soft relative overflow-x-hidden w-full">
-      {/* Announcement Bar */}
-      <div className="bg-text-dark text-cream text-[11px] tracking-[0.2em] uppercase py-2 text-center font-medium px-4">
-        Free shipping on all heirloom keepsakes over ₹5,000
-      </div>
-
       {/* Main Section */}
       <main
         className="py-16 px-6 max-w-7xl mx-auto space-y-12"
@@ -404,20 +402,33 @@ export default function StarlingTalesProduct() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              isWishlisted={wishlistItems.some(
-                (item) => item._id === product.id,
-              )}
-              onWishlist={handleWishlistToggle}
-              onQuickView={setQuickViewId}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
-        </div>
+        {loading || isProductsLoading ? (
+          <ProductGridSkeleton count={8} />
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-16 bg-white/60 rounded-3xl border border-[#E8DFC8]/60 p-8 max-w-md mx-auto space-y-3">
+            <h3 className="font-display text-xl font-semibold text-text-dark">
+              No Keepsakes Found
+            </h3>
+            <p className="text-xs text-text-muted font-light">
+              We currently don't have items matching this collection.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isWishlisted={wishlistItems.some(
+                  (item) => item._id === product.id,
+                )}
+                onWishlist={handleWishlistToggle}
+                onQuickView={setQuickViewId}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
+        )}
       </main>
       {/* Cart Drawer */}
       {cartOpen && (

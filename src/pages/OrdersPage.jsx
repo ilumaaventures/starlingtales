@@ -14,8 +14,6 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { getMyOrdersApi } from "../services/orderApi";
 import { formatPrice } from "../constants/constants";
-import StarlingNavbar from "../components/StarlingNavbar";
-import StarlingFooter from "../components/StarlingFooter";
 
 export default function OrdersPage() {
   const { user, isAuthenticated, openLoginModal } = useAuth();
@@ -45,11 +43,8 @@ export default function OrdersPage() {
   }, [isAuthenticated]);
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#2C3E35] flex flex-col justify-between">
-      <StarlingNavbar />
-
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 w-full flex-1">
-        <div className="space-y-2 mb-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full flex-1">
+      <div className="space-y-2 mb-8">
           <span className="font-serif italic text-xs text-[#C5A880] uppercase tracking-wider">
             Chronicle Archives
           </span>
@@ -215,9 +210,6 @@ export default function OrdersPage() {
             })}
           </div>
         )}
-      </main>
-
-      <StarlingFooter />
-    </div>
-  );
-}
+      </div>
+    );
+  }

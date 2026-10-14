@@ -18,12 +18,17 @@ import toast from "react-hot-toast";
 
 import "../styles/StarlingTales.css";
 import { useStore } from "../context/StoreContext";
-import { HAMPER_OCCASIONS, HAMPER_PERKS, formatPrice } from "../constants/constants";
+import {
+  HAMPER_OCCASIONS,
+  HAMPER_PERKS,
+  formatPrice,
+} from "../constants/constants";
 
 import Icon from "../components/Icon";
 import HeartDivider from "../components/HeartDivider";
 import ProductModal from "../components/ProductModal";
 import CartDrawer from "../components/CartDrawer";
+import { HamperGridSkeleton } from "../components/StarlingSkeletons";
 
 // Local High-Res Hamper Assets
 import hamper1 from "../assets/hamper-1 (1).jpeg";
@@ -32,172 +37,6 @@ import hamper3 from "../assets/hamper-1 (3).jpeg";
 import hamper4 from "../assets/hamper-1 (4).jpeg";
 import hamper5 from "../assets/hamper-1 (5).jpeg";
 
-const LOCAL_DEFAULT_HAMPERS = [
-  {
-    id: "hamper-1",
-    name: "The Heirloom Welcome Hamper",
-    tagline:
-      "A signature newborn welcome gift with hand-stitched companion and cosy muslin essentials.",
-    price: 3999,
-    originalPrice: 4599,
-    image: hamper1,
-    gallery: [hamper1, hamper2, hamper3],
-    category: "Gift Hampers",
-    occasion: "Newborn & Baby Shower",
-    badge: "Bestseller",
-    rating: 5.0,
-    reviews: 64,
-    inStock: true,
-    description:
-      "A timeless newborn greeting set presented in a reusable woven cotton rope basket. Features our beloved handmade companion, an organic waffle-knit blanket, a natural beechwood rattle, and a personalised calligraphy gift note.",
-    includedItems: [
-      "Handmade Giraffe Plush Companion (30cm)",
-      "100% Organic Cotton Waffle Blanket (100x120cm)",
-      "Smooth Natural Beechwood Rattle with gentle chime",
-      "Embroidered Starling Muslin Keepsake Drawstring Pouch",
-      "Wax-Sealed Hand-Calligraphed Welcome Card",
-      "Handcrafted Woven Rope Basket with Linen Liner",
-    ],
-    details: [
-      "Basket Dimensions: 32cm dia x 22cm ht",
-      "Materials: 100% Organic Muslin Cotton & Hypoallergenic Plush",
-      "Care: Spot clean basket, machine wash gentle for textiles",
-      "Certification: CE Certified & Non-toxic infant safe",
-      "Suitable from birth (0m+)",
-    ],
-    tags: ["newborn", "hamper", "bestseller", "baby shower", "all hampers"],
-  },
-  {
-    id: "hamper-2",
-    name: "Bunny Family Keepsake Basket",
-    tagline:
-      "Handcrafted knit companions nestled in an artisanal storage basket.",
-    price: 4499,
-    originalPrice: 4999,
-    image: hamper2,
-    gallery: [hamper2, hamper1, hamper4],
-    category: "Gift Hampers",
-    occasion: "Sibling & Twins",
-    badge: "Gift Set",
-    rating: 4.9,
-    reviews: 48,
-    inStock: true,
-    description:
-      "Handcrafted plush companions nestled inside an embroidered storage basket. Perfect for nursery decor, sibling gifting, or twin baby celebrations.",
-    includedItems: [
-      "Handcrafted Plush Companions (25cm each)",
-      "Hand-stitched Outfits & Organic Swaddles",
-      "Premium Thick-Woven Rope Nursery Basket (26cm dia)",
-      "Personalised Embroidered Initial Patch",
-      "Botanical Gifting Tag with Dried Lavender Sachet",
-    ],
-    details: [
-      "Set includes companions + 1 woven basket",
-      "Dimensions: 26cm dia x 20cm ht",
-      "Material: Cotton linen blend with hypoallergenic polyfill",
-      "Spot clean only",
-      "Suitable for ages 0+",
-    ],
-    tags: ["bunnies", "siblings", "basket", "keepsake", "all hampers"],
-  },
-  {
-    id: "hamper-3",
-    name: "Blushing Rose Keepsake Box",
-    tagline:
-      "A dreamscape collection with pastel ribbons and pure organic muslin essentials.",
-    price: 4899,
-    originalPrice: 5499,
-    image: hamper3,
-    gallery: [hamper3, hamper1, hamper5],
-    category: "Gift Hampers",
-    occasion: "Newborn & Baby Shower",
-    badge: "Luxury",
-    rating: 4.9,
-    reviews: 52,
-    inStock: true,
-    description:
-      "An enchanting nursery curation wrapped with soft rose ribbons, pure muslin swaddles, soft knitted baby booties, and a hardbound illustrated bedtime chronicle.",
-    includedItems: [
-      "Artisanal Companion Plush with Velvet Accents",
-      "Reversible Pastel Muslin Quilt (100x130cm)",
-      "Handmade Knitted Organic Cotton Booties",
-      "Starling Tales Bedtime Storybook & Bookmark",
-      "Signature Woven Keepsake Basket with Linen Lining",
-    ],
-    details: [
-      "Basket Dimensions: 35cm x 28cm x 15cm",
-      "Quilt: 4-layer 100% breathable organic cotton muslin",
-      "Safe from birth (0m+)",
-      "Re-usable heirloom storage chest",
-    ],
-    tags: ["rose", "quilt", "woodland", "nursery", "luxury", "all hampers"],
-  },
-  {
-    id: "hamper-4",
-    name: "Sleepy Bunny Nursery Cloud Set",
-    tagline:
-      "An imaginative milestone gift with signature velvet bunny & cloud swaddles.",
-    price: 5299,
-    originalPrice: 5999,
-    image: hamper4,
-    gallery: [hamper4, hamper2, hamper3],
-    category: "Gift Hampers",
-    occasion: "Milestone & Birthday",
-    badge: "Personalised",
-    rating: 4.8,
-    reviews: 39,
-    inStock: true,
-    description:
-      "The ultimate birthday and milestone gift. Features our signature handcrafted velvet bunny paired with sky-blue cloud textiles, keepsake adventure cards, and a woven storage tray.",
-    includedItems: [
-      "Handcrafted Velvet Bunny Companion (30cm)",
-      "Sky-Blue Cloud Organic Muslin Blanket",
-      "Set of Double-Sided Wooden Milestone Discs",
-      "Embroidered Custom Name Tag",
-      "Festive Gifting Box with Ribbon & Keepsake Wax Seal",
-    ],
-    details: [
-      "Dimensions: 28cm x 22cm x 10cm",
-      "Plush: 100% cotton with soft hypoallergenic filling",
-      "Personalisation included in package price",
-      "Suitable for ages 0 to 5 years",
-    ],
-    tags: ["bunny", "cloud", "birthday", "personalised", "all hampers"],
-  },
-  {
-    id: "hamper-5",
-    name: "Golden Sunshine Celebration Trunk",
-    tagline:
-      "Gentle companion with golden satin bow, sweet surprises and organic bodysuits.",
-    price: 4299,
-    originalPrice: 4899,
-    image: hamper5,
-    gallery: [hamper5, hamper1, hamper2],
-    category: "Gift Hampers",
-    occasion: "Milestone & Birthday",
-    badge: "New",
-    rating: 4.9,
-    reviews: 31,
-    inStock: true,
-    description:
-      "A golden celebration trunk wrapped with luxurious satin ribbons, premium organic cotton essentials, and beloved keepsakes to celebrate cherished moments.",
-    includedItems: [
-      "Plush Companion with Pocket Surprises",
-      "Pure Organic Golden Trim Muslin Swaddle",
-      "Handmade Wooden Rattle & Teether",
-      "Baby First Moments Milestone Journal",
-      "Woven Keepsake Basket with Satin Bow Ribbon",
-    ],
-    details: [
-      "Basket Dimensions: 30cm dia x 18cm ht",
-      "Textiles: 100% Certified Organic Muslin",
-      "Non-toxic vegetable dyes",
-      "Suitable from birth (0m+)",
-    ],
-    tags: ["golden", "sunshine", "trunk", "celebration", "all hampers"],
-  },
-];
-
 export default function StarlingGiftHampers() {
   const navigate = useNavigate();
   const {
@@ -205,6 +44,8 @@ export default function StarlingGiftHampers() {
     categories,
     storeHomePath: contextHomePath,
     business,
+    loading = false,
+    isProductsLoading = false,
     cartItems = [],
     wishlistItems = [],
     addToCart,
@@ -289,7 +130,9 @@ export default function StarlingGiftHampers() {
         const rawImgs =
           p.images?.length > 0
             ? p.images.map((img) => (typeof img === "object" ? img.url : img))
-            : [LOCAL_DEFAULT_HAMPERS[idx % LOCAL_DEFAULT_HAMPERS.length].image];
+            : p.image
+              ? [p.image]
+              : [];
 
         const stockCount =
           p.stock !== undefined
@@ -322,8 +165,8 @@ export default function StarlingGiftHampers() {
               : idx % 2 === 0
                 ? "Bestseller"
                 : "Gift Set"),
-          rating: p.rating || 4.9,
-          reviews: p.numReviews || 24,
+          rating: p.rating || 0,
+          reviews: p.numReviews || p.reviews?.length || 0,
           inStock: isInStock,
           stock: stockCount,
           description: p.description || "",
@@ -353,7 +196,7 @@ export default function StarlingGiftHampers() {
       });
     }
 
-    return LOCAL_DEFAULT_HAMPERS;
+    return [];
   }, [apiProducts, categories]);
 
   // Filter by occasion
@@ -422,17 +265,20 @@ export default function StarlingGiftHampers() {
       return;
     }
 
-    addToCart({
-      _id: product.id || product._id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      images: [{ url: product.image }],
-      stock: availableStock,
-      source: "store",
-      storeName: "Starling Tales",
-      storeSlug: "starlingtales",
-    }, qty);
+    addToCart(
+      {
+        _id: product.id || product._id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        images: [{ url: product.image }],
+        stock: availableStock,
+        source: "store",
+        storeName: "Starling Tales",
+        storeSlug: "starlingtales",
+      },
+      qty,
+    );
     toast.success(`${product.name} added to your cart!`);
     setCartOpen(true);
   };
@@ -472,11 +318,6 @@ export default function StarlingGiftHampers() {
 
   return (
     <div className="min-h-screen bg-cream text-text-dark font-sans selection:bg-blue-light selection:text-blue-soft relative overflow-x-hidden">
-      {/* Top Banner Notice */}
-      <div className="bg-text-dark text-cream text-[11px] tracking-[0.2em] uppercase py-2.5 text-center font-medium px-4 flex items-center justify-center gap-2">
-        <span>Free shipping on all heirloom keepsakes over ₹5,000</span>
-      </div>
-
       {/* Hero Header Section */}
       <div
         id="hamperheader"
@@ -499,7 +340,7 @@ export default function StarlingGiftHampers() {
           {/* Custom Hamper CTA Pill */}
           <div className="pt-2">
             <Link
-              to={`${storeHomePath}/create-hamper`}
+              to={`/create-hamper`}
               className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white border border-[#E2D8C3] hover:border-[#2C3E35] text-xs font-semibold text-[#2C3E35] shadow-xs hover:shadow-md transition-all duration-200 group"
             >
               <span>
@@ -517,7 +358,9 @@ export default function StarlingGiftHampers() {
 
       {/* Main Hampers Showcase Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-        {filteredHampers.length === 0 ? (
+        {loading || isProductsLoading ? (
+          <HamperGridSkeleton count={3} />
+        ) : filteredHampers.length === 0 ? (
           <div className="text-center py-16 bg-cream-dark/60 rounded-3xl border border-[#E8DFC8]/60 p-8 max-w-xl mx-auto space-y-4">
             <Gift size={36} className="mx-auto text-gold" />
             <h3 className="font-display text-xl font-semibold text-text-dark">
@@ -740,7 +583,7 @@ export default function StarlingGiftHampers() {
 
       <div className="pt-2 flex justify-center pb-12">
         <Link
-          to={`${storeHomePath}/create-hamper`}
+          to={`/create-hamper`}
           className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white border border-[#E2D8C3] hover:border-[#2C3E35] text-xs font-semibold text-[#2C3E35] shadow-xs hover:shadow-md transition-all duration-200 group"
         >
           <span>

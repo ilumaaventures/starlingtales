@@ -8,16 +8,35 @@ import React, {
 } from "react";
 import toast from "react-hot-toast";
 import * as cartApi from "../services/cartApi";
+import { validateCouponApi } from "../services/couponApi";
+import { checkPincodeServiceabilityApi } from "../services/shippingApi";
 import { FREE_SHIPPING_THRESHOLD, readStorage } from "../constants/constants";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
+  const { isAuthenticated, openLoginModal } = useAuth();
+
   const [cartItems, setCartItems] = useState(() =>
     readStorage("starling_cart", [])
   );
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // Coupon state
+  const [appliedCoupon, setAppliedCoupon] = useState(() =>
+    readStorage("starling_coupon", null)
+  );
+
+  // Delivery Pincode verification state
+  const [deliveryPincode, setDeliveryPincode] = useState(() =>
+    readStorage("starling_pincode", "")
+  );
+  const [pincodeInfo, setPincodeInfo] = useState(() =>
+    readStorage("starling_pincode_info", null)
+  );
+  const [isCheckingPincode, setIsCheckingPincode] = useState(false);
 
   // Sync to localStorage
   useEffect(() => {
@@ -27,6 +46,19 @@ export function CartProvider({ children }) {
       console.warn("Could not sync cart to localStorage", e);
     }
   }, [cartItems]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("starling_coupon", JSON.stringify(appliedCoupon));
+    } catch (_) {}
+  }, [appliedCoupon]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("starling_pincode", deliveryPincode);
+      localStorage.setItem("starling_pincode_info", JSON.stringify(pincodeInfo));
+    } catch (_) {}
+  }, [deliveryPincode, pincodeInfo]);
 
   // Sync with backend when user authenticates
   useEffect(() => {
@@ -55,7 +87,6 @@ export function CartProvider({ children }) {
         // Fetch refreshed cart from server
         const serverCart = await cartApi.getCartApi();
         if (serverCart?.items && Array.isArray(serverCart.items)) {
-          // Merge server items with any custom hampers from local
           const customHampers = local.filter(
             (it) => !/^[a-f\d]{24}$/i.test(it._id || it.id)
           );
@@ -104,6 +135,10 @@ export function CartProvider({ children }) {
       );
   }, []);
 
+  /**
+   * Add To Cart - GATED strictly by Authentication!
+   * Without login, items cannot be added into the cart.
+   */
   const addToCart = useCallback(
     (
       product,
@@ -111,7 +146,31 @@ export function CartProvider({ children }) {
       selectedVariant = null,
       customGiftMessage = ""
     ) => {
-      if (!product) return;
+      if (!product) return false;
+
+      // STRICT AUTH GATE: Gated by user authentication
+      if (!isAuthenticated) {
+        toast.error(
+          "Please sign in to add treasured keepsakes to your cart ✨",
+          {
+            icon: "🔒",
+            style: {
+              background: "#37463f",
+              color: "#fffefc",
+              fontFamily: "'Outfit', sans-serif",
+            },
+            duration: 4000,
+          }
+        );
+
+        if (openLoginModal) {
+          openLoginModal(() => {
+            // Once logged in, automatically finish adding the item
+            addToCart(product, qty, selectedVariant, customGiftMessage);
+          });
+        }
+        return false;
+      }
 
       const pId = product._id || product.id;
       const variantKey = selectedVariant
@@ -159,7 +218,7 @@ export function CartProvider({ children }) {
         ];
       });
 
-      // Background API sync if authenticated and is valid backend product ID
+      // Background API sync for valid backend MongoDB product IDs
       const token =
         localStorage.getItem("starling_token") || localStorage.getItem("token");
       if (token && /^[a-f\d]{24}$/i.test(pId)) {
@@ -184,8 +243,9 @@ export function CartProvider({ children }) {
         }
       );
       setIsCartOpen(true);
+      return true;
     },
-    []
+    [isAuthenticated, openLoginModal]
   );
 
   const updateCartQuantity = useCallback((id, qty) => {
@@ -231,6 +291,7 @@ export function CartProvider({ children }) {
 
   const clearCart = useCallback(() => {
     setCartItems([]);
+    setAppliedCoupon(null);
     const token =
       localStorage.getItem("starling_token") || localStorage.getItem("token");
     if (token) {
@@ -252,6 +313,71 @@ export function CartProvider({ children }) {
     return cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
   }, [cartItems]);
 
+  // Coupon calculations
+  const discountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    return Math.min(cartSubtotal, Number(appliedCoupon.discountAmount) || 0);
+  }, [appliedCoupon, cartSubtotal]);
+
+  const applyCoupon = useCallback(
+    async (code) => {
+      try {
+        const result = await validateCouponApi({
+          code,
+          cartItems,
+          subtotal: cartSubtotal,
+        });
+        setAppliedCoupon(result);
+        toast.success(result.message, {
+          style: {
+            background: "#37463f",
+            color: "#fffefc",
+          },
+        });
+        return result;
+      } catch (err) {
+        toast.error(err.message || "Failed to apply coupon.");
+        throw err;
+      }
+    },
+    [cartItems, cartSubtotal]
+  );
+
+  const removeCoupon = useCallback(() => {
+    setAppliedCoupon(null);
+    toast.success("Coupon removed from your cart.");
+  }, []);
+
+  // Pincode Delivery Check
+  const verifyDeliveryPincode = useCallback(
+    async (pin) => {
+      setIsCheckingPincode(true);
+      try {
+        const result = await checkPincodeServiceabilityApi(pin, {
+          subtotal: cartSubtotal,
+        });
+        setDeliveryPincode(pin);
+        setPincodeInfo(result);
+        if (result.serviceable) {
+          toast.success(result.message, {
+            icon: "📍",
+          });
+        } else {
+          toast.error(result.message);
+        }
+        return result;
+      } finally {
+        setIsCheckingPincode(false);
+      }
+    },
+    [cartSubtotal]
+  );
+
+  const clearPincode = useCallback(() => {
+    setDeliveryPincode("");
+    setPincodeInfo(null);
+  }, []);
+
   const freeShippingRemaining = Math.max(
     0,
     FREE_SHIPPING_THRESHOLD - cartSubtotal
@@ -272,6 +398,17 @@ export function CartProvider({ children }) {
     isFreeShipping,
     freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
     isSyncing,
+    // Coupon system
+    appliedCoupon,
+    discountAmount,
+    applyCoupon,
+    removeCoupon,
+    // Pincode validation
+    deliveryPincode,
+    pincodeInfo,
+    isCheckingPincode,
+    verifyDeliveryPincode,
+    clearPincode,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

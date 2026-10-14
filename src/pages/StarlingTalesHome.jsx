@@ -1,14 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../styles/StarlingTales.css";
-import {
-  PRODUCTS,
-  RESIDENTS,
-  navLinks,
-  pillars,
-  FREE_SHIPPING_THRESHOLD,
-  formatPrice,
-  readStorage,
-} from "../constants/constants";
+import { readStorage } from "../constants/constants";
 import CartDrawer from "../components/CartDrawer";
 import StarlingTalesHero from "./StarlingTalesHero";
 import BrandPillars from "./BrandPillars";
@@ -63,9 +55,6 @@ export default function StarlingTalesHome() {
       {!showIntro && <StarlingHamperVideoModal />}
 
       <div className="min-h-screen bg-cream text-text-dark font-sans selection:bg-blue-light selection:text-blue-soft relative overflow-x-hidden">
-        <div className="bg-text-dark text-cream text-[11px] tracking-[0.2em] uppercase py-2 text-center font-medium px-4">
-          Free shipping on all heirloom keepsakes over ₹5,000
-        </div>
         <StarlingTalesHero />
         <Residents />
         <StarlingAbout />

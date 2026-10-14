@@ -300,7 +300,7 @@ export default function GiftHamper() {
               {/* CTA Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <Link
-                  to={`${storeHomePath}/create-hamper`}
+                  to={`/create-hamper`}
                   className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#2C3E35] hover:bg-[#1E2B25] text-white text-[11px] font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-200 shadow-md group"
                 >
                   <span>Create your own hamper</span>
@@ -309,15 +309,6 @@ export default function GiftHamper() {
                     className="transition-transform group-hover:translate-x-1"
                   />
                 </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setShowVideoModal(true)}
-                  className="inline-flex items-center gap-2 px-5 py-3.5 border border-[#2C3E35]/30 hover:border-[#2C3E35] text-[#2C3E35] hover:bg-[#2C3E35]/5 text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-all duration-200 cursor-pointer shadow-xs"
-                >
-                  <Play size={13} className="fill-current text-[#C5A880]" />
-                  <span>Watch Crafting Video</span>
-                </button>
               </div>
             </div>
           </div>

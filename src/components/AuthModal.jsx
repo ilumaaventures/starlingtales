@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Mail, Lock, User, Phone, Sparkles, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import GoogleAuthButton from "./GoogleAuthButton";
+import starlingLogo from "../assets/logo.jpeg";
 
 export default function AuthModal() {
   const {
@@ -67,6 +68,14 @@ export default function AuthModal() {
           >
             <X size={18} />
           </button>
+
+          <div className="w-12 h-12 bg-white/95 rounded-xl p-1.5 mx-auto mb-2.5 shadow-md flex items-center justify-center border border-[#C5A880]/30">
+            <img
+              src={starlingLogo}
+              alt="Starling Tales"
+              className="w-full h-full object-contain"
+            />
+          </div>
 
           <div className="inline-flex items-center justify-center gap-2 mb-1 px-3 py-1 rounded-full bg-white/10 text-[#C5A880] text-xs font-serif italic tracking-wide">
             <Sparkles size={12} />

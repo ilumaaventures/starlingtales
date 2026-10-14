@@ -7,6 +7,8 @@ import { formatPrice } from "../constants/constants";
 import * as productApi from "../services/productApi";
 import HeartDivider from "../components/HeartDivider";
 import CartDrawer from "../components/CartDrawer";
+import ProductReviewsSection from "../components/ProductReviewsSection";
+import { ProductDetailSkeleton } from "../components/StarlingSkeletons";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -56,8 +58,8 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-blue-soft border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-cream py-10 px-4 sm:px-6 lg:px-8">
+        <ProductDetailSkeleton />
       </div>
     );
   }
@@ -272,6 +274,16 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Real Customer Reviews & Feedback Section */}
+        <div className="mt-14 max-w-5xl mx-auto">
+          <ProductReviewsSection
+            productId={product._id || product.id}
+            productName={product.name}
+            initialRating={product.rating || 5}
+            initialReviewCount={product.numReviews || 0}
+          />
         </div>
       </div>
     </div>

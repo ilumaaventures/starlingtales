@@ -2,7 +2,8 @@ import React, { useMemo, useState } from "react";
 import "../styles/StarlingTales.css";
 import { useStore } from "../context/StoreContext";
 import toast from "react-hot-toast";
-import { PRODUCTS, formatPrice } from "../constants/constants";
+import { formatPrice } from "../constants/constants";
+import { ProductGridSkeleton } from "../components/StarlingSkeletons";
 import Icon from "../components/Icon";
 import ProductCard from "../components/ProductCard";
 import ProductModal from "../components/ProductModal";
@@ -15,6 +16,8 @@ export default function StarlingCollection() {
     business,
     products,
     categories: storeCategories,
+    loading = false,
+    isProductsLoading = false,
     storeHomePath: contextHomePath,
     cartItems = [],
     wishlistItems = [],
@@ -46,7 +49,7 @@ export default function StarlingCollection() {
     if (Array.isArray(products) && products.length > 0) {
       return products;
     }
-    return PRODUCTS || [];
+    return [];
   }, [products]);
 
   // Map store categories by ID and name (never exposing raw 24-char hex IDs)
@@ -294,12 +297,15 @@ export default function StarlingCollection() {
       return;
     }
 
-    addToCart({
-      ...origProduct,
-      source: "store",
-      storeName: "Starling Tales",
-      storeSlug: "starlingtales",
-    }, qty);
+    addToCart(
+      {
+        ...origProduct,
+        source: "store",
+        storeName: "Starling Tales",
+        storeSlug: "starlingtales",
+      },
+      qty,
+    );
     const remaining = availableStock - (currentCartQty + qty);
     toast.success(
       `${origProduct.name} added to cart! ${
@@ -418,7 +424,9 @@ export default function StarlingCollection() {
         </div>
 
         {/* Products Grid */}
-        {filteredProducts.length === 0 ? (
+        {loading || isProductsLoading ? (
+          <ProductGridSkeleton count={8} />
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12 space-y-3 bg-white/40 rounded-2xl border border-cream-dark/50">
             <p className="text-text-muted text-sm font-light">
               No keepsakes currently found in "{activeCategory}".
@@ -451,7 +459,7 @@ export default function StarlingCollection() {
         {/* Bottom Explore More Action */}
         <div className="flex justify-end pt-2">
           <Link
-            to={`${storeHomePath}/products`}
+            to={`/products`}
             className="text-text-dark font-semibold text-sm hover:text-blue-soft inline-flex items-center gap-1.5 transition-colors"
           >
             Explore all nursery keepsakes{" "}

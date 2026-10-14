@@ -23,7 +23,8 @@ import toast from "react-hot-toast";
 
 import "../styles/StarlingTales.css";
 import { useStore } from "../context/StoreContext";
-import { PRODUCTS, formatPrice } from "../constants/constants";
+import { formatPrice } from "../constants/constants";
+import { ProductGridSkeleton } from "../components/StarlingSkeletons";
 import HeartDivider from "../components/HeartDivider";
 import CartDrawer from "../components/CartDrawer";
 
@@ -85,6 +86,8 @@ export default function CreateOwnHamper() {
     products: apiProducts,
     storeHomePath: contextHomePath,
     business,
+    loading = false,
+    isProductsLoading = false,
     addToCart,
     clearCart,
   } = useStore();
@@ -119,10 +122,7 @@ export default function CreateOwnHamper() {
 
   // Filter Nursery Collection Products directly
   const nurseryProducts = useMemo(() => {
-    const rawList =
-      Array.isArray(apiProducts) && apiProducts.length > 0
-        ? apiProducts
-        : PRODUCTS || [];
+    const rawList = Array.isArray(apiProducts) ? apiProducts : [];
 
     return rawList
       .filter((p) => {
@@ -313,24 +313,27 @@ export default function CreateOwnHamper() {
 
     // 1. Add each selected single nursery product with hamper tags sequentially
     for (const item of selectedItems) {
-      addToCart({
-        _id: item.product.id || item.product._id,
-        id: item.product.id || item.product._id,
-        name: item.product.name,
-        price: item.product.price,
-        image: item.product.image,
-        category: "Nursery",
-        isHamperItem: true,
-        hamperId,
-        hamperName,
-        hamperBasket: selectedBasket.name,
-        hamperRecipient: recipientName || "Special Someone",
-        hamperSender: senderName || "",
-        hamperNote: cardMessage || "",
-        source: "store",
-        storeName: "Starling Tales",
-        storeSlug: "starlingtales",
-      }, item.quantity);
+      addToCart(
+        {
+          _id: item.product.id || item.product._id,
+          id: item.product.id || item.product._id,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.image,
+          category: "Nursery",
+          isHamperItem: true,
+          hamperId,
+          hamperName,
+          hamperBasket: selectedBasket.name,
+          hamperRecipient: recipientName || "Special Someone",
+          hamperSender: senderName || "",
+          hamperNote: cardMessage || "",
+          source: "store",
+          storeName: "Starling Tales",
+          storeSlug: "starlingtales",
+        },
+        item.quantity,
+      );
     }
 
     toast.success("Bespoke Hamper created and added to your bag!", {
@@ -347,14 +350,6 @@ export default function CreateOwnHamper() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] text-[#2C3E35] font-sans selection:bg-[#EAE2D2] selection:text-[#2C3E35] pb-28">
-      {/* Top Banner Notice */}
-      <div className="bg-[#2C3E35] text-[#FAF7F2] text-[11px] tracking-[0.2em] uppercase py-2.5 text-center font-medium px-4 flex items-center justify-center gap-2">
-        <Sparkles size={13} className="text-[#C5A880]" />
-        <span>
-          Select Nursery Treasures & Create Your Hamper Order in Minutes
-        </span>
-      </div>
-
       {/* Header Section */}
       <header className="bg-gradient-to-b from-[#FAF6F0] via-[#FAF7F2] to-[#FAF7F2] pt-10 pb-6 px-4 sm:px-6 lg:px-8 text-center border-b border-[#E8DFC8]/50">
         <div className="max-w-3xl mx-auto space-y-3">
@@ -395,7 +390,9 @@ export default function CreateOwnHamper() {
                 </span>
               </div>
 
-              {filteredProducts.length === 0 ? (
+              {loading || isProductsLoading ? (
+                <ProductGridSkeleton count={6} />
+              ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-12 bg-white rounded-2xl border border-[#E8DFC8]/60 p-6 space-y-2">
                   <p className="text-sm text-[#5B5B5B] font-light">
                     No nursery products found matching "{searchQuery}".

@@ -283,9 +283,19 @@ export default function CartDrawer({
               <span>Shipping</span>
               <span>{shipping === 0 ? "FREE" : formatPrice(shipping)}</span>
             </div>
+            {store.discountAmount > 0 && (
+              <div className="flex items-center justify-between text-xs text-emerald-800 font-medium">
+                <span>Coupon ({store.appliedCoupon?.code})</span>
+                <span>- {formatPrice(store.discountAmount)}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between font-display text-base font-bold text-text-dark pt-1 border-t border-cream-dark/50">
               <span>Subtotal</span>
-              <span>{formatPrice(subtotal + shipping)}</span>
+              <span>
+                {formatPrice(
+                  Math.max(0, subtotal - (store.discountAmount || 0) + shipping)
+                )}
+              </span>
             </div>
 
             <button
@@ -293,7 +303,11 @@ export default function CartDrawer({
               onClick={handleProceedCheckout}
               className="w-full py-3.5 px-4 bg-text-dark text-cream hover:bg-text-dark/90 font-sans text-xs tracking-widest uppercase font-bold rounded-xl transition shadow-sm cursor-pointer"
             >
-              Proceed to Keepsake Bag ({formatPrice(subtotal + shipping)})
+              Proceed to Keepsake Bag (
+              {formatPrice(
+                Math.max(0, subtotal - (store.discountAmount || 0) + shipping)
+              )}
+              )
             </button>
           </div>
         )}

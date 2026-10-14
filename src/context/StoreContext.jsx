@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import * as productApi from "../services/productApi";
 import { BUSINESS_CONFIG } from "../config/businessConfig";
-import { PRODUCTS } from "../constants/constants";
 import { CartProvider, useCart } from "./CartContext";
 import { WishlistProvider, useWishlist } from "./WishlistContext";
 import { AuthProvider, useAuth } from "./AuthContext";
@@ -17,7 +16,7 @@ export const StoreContext = createContext(null);
 
 export function StoreDataProvider({ children }) {
   const [business, setBusiness] = useState(BUSINESS_CONFIG);
-  const [products, setProducts] = useState(PRODUCTS);
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(["All", "Dolls", "Soft Toys", "Nursery", "Gift Hampers"]);
   const [banners, setBanners] = useState([]);
   const [slides, setSlides] = useState([]);
@@ -62,12 +61,7 @@ export function StoreDataProvider({ children }) {
           : Array.isArray(prodRes?.products)
           ? prodRes.products
           : [];
-        if (rawList.length > 0) {
-          setProducts(rawList);
-        } else {
-          // Keep curated constants if empty in DB
-          setProducts(PRODUCTS);
-        }
+        setProducts(rawList);
       }
 
       if (catRes) {

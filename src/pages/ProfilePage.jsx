@@ -30,8 +30,6 @@ import {
 } from "../services/authApi";
 import { getMyOrdersApi } from "../services/orderApi";
 import { formatPrice } from "../constants/constants";
-import StarlingNavbar from "../components/StarlingNavbar";
-import StarlingFooter from "../components/StarlingFooter";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, updateProfile, logout, openLoginModal, loading } = useAuth();
@@ -236,48 +234,41 @@ export default function ProfilePage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#FAF7F2] text-[#2C3E35] flex flex-col justify-between">
-        <StarlingNavbar />
-        <main className="flex-1 flex items-center justify-center p-6 py-28">
-          <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-[#E8DFC8]/60 shadow-xl text-center space-y-5">
-            <div className="w-16 h-16 rounded-full bg-[#37463f]/10 text-[#37463f] flex items-center justify-center mx-auto">
-              <User size={32} />
-            </div>
-            <div className="space-y-1">
-              <span className="font-serif italic text-xs text-[#C5A880] uppercase tracking-wider">
-                Sanctuary Member Gate
-              </span>
-              <h1 className="font-serif text-2xl font-bold">Please Sign In</h1>
-              <p className="text-xs text-neutral-500">
-                Sign in to view and preserve your nursery chronicles, addresses, and custom hamper orders.
-              </p>
-            </div>
-            <div className="pt-2 flex flex-col gap-3">
-              <button
-                onClick={() => openLoginModal()}
-                className="w-full py-3.5 bg-[#37463f] hover:bg-[#2C3E35] text-[#FAF6F0] rounded-xl text-xs font-semibold uppercase tracking-wider shadow-md cursor-pointer transition-colors"
-              >
-                Sign In to Sanctuary
-              </button>
-              <Link
-                to="/register"
-                className="w-full py-3 bg-white border border-[#E8DFC8] text-[#2C3E35] rounded-xl text-xs font-semibold uppercase tracking-wider hover:bg-[#FAF7F2] transition-colors"
-              >
-                Create an Account
-              </Link>
-            </div>
+      <div className="flex-1 flex items-center justify-center p-6 py-16">
+        <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-[#E8DFC8]/60 shadow-xl text-center space-y-5">
+          <div className="w-16 h-16 rounded-full bg-[#37463f]/10 text-[#37463f] flex items-center justify-center mx-auto">
+            <User size={32} />
           </div>
-        </main>
-        <StarlingFooter />
+          <div className="space-y-1">
+            <span className="font-serif italic text-xs text-[#C5A880] uppercase tracking-wider">
+              Sanctuary Member Gate
+            </span>
+            <h1 className="font-serif text-2xl font-bold">Please Sign In</h1>
+            <p className="text-xs text-neutral-500">
+              Sign in to view and preserve your nursery chronicles, addresses, and custom hamper orders.
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col gap-3">
+            <button
+              onClick={() => openLoginModal()}
+              className="w-full py-3.5 bg-[#37463f] hover:bg-[#2C3E35] text-[#FAF6F0] rounded-xl text-xs font-semibold uppercase tracking-wider shadow-md cursor-pointer transition-colors"
+            >
+              Sign In to Sanctuary
+            </button>
+            <Link
+              to="/register"
+              className="w-full py-3 bg-white border border-[#E8DFC8] text-[#2C3E35] rounded-xl text-xs font-semibold uppercase tracking-wider hover:bg-[#FAF7F2] transition-colors"
+            >
+              Create an Account
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#2C3E35] flex flex-col justify-between">
-      <StarlingNavbar />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 w-full flex-1 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full flex-1 space-y-8">
         {/* Top Hero Card */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E8DFC8]/60 shadow-xs relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#FAF7F2] rounded-full -mr-20 -mt-20 blur-2xl pointer-events-none" />
@@ -833,9 +824,6 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
-      </main>
-
-      <StarlingFooter />
-    </div>
-  );
-}
+      </div>
+    );
+  }
