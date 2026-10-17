@@ -383,6 +383,11 @@ export function CartProvider({ children }) {
     FREE_SHIPPING_THRESHOLD - cartSubtotal
   );
   const isFreeShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD;
+  const isShippingWaived = appliedCoupon?.code === "HEIRLOOM";
+  const shadowfaxRate =
+    pincodeInfo?.shippingFee != null ? Number(pincodeInfo.shippingFee) : 69;
+  const shippingFee =
+    isFreeShipping || cartSubtotal === 0 || isShippingWaived ? 0 : shadowfaxRate;
 
   const value = {
     cartItems,
@@ -396,6 +401,7 @@ export function CartProvider({ children }) {
     clearCart,
     freeShippingRemaining,
     isFreeShipping,
+    isShippingWaived,
     freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
     isSyncing,
     // Coupon system
@@ -403,9 +409,13 @@ export function CartProvider({ children }) {
     discountAmount,
     applyCoupon,
     removeCoupon,
-    // Pincode validation
+    // Pincode & Shadowfax validation
     deliveryPincode,
     pincodeInfo,
+    shippingFee,
+    shadowfaxRate,
+    courierPartner: pincodeInfo?.courierPartner || "Shadowfax Logistics",
+    deliveryDate: pincodeInfo?.deliveryDate || null,
     isCheckingPincode,
     verifyDeliveryPincode,
     clearPincode,

@@ -204,7 +204,12 @@ export default function WishlistPage() {
                     <div>
                       {item.category && (
                         <span className="text-[10px] font-serif uppercase tracking-widest text-[#C5A880] block mb-1">
-                          {item.category}
+                          {typeof item.category === "object" && item.category !== null
+                            ? item.category.name || item.category.title || ""
+                            : typeof item.category === "string" &&
+                              !/^[0-9a-fA-F]{24}$/.test(item.category.trim())
+                            ? item.category.trim()
+                            : ""}
                         </span>
                       )}
                       <Link

@@ -15,33 +15,53 @@ export const checkPincodeServiceabilityApi = async (pincode, options = {}) => {
       codAvailable: false,
       estimatedDays: null,
       courierPartner: null,
+      shippingFee: 69,
+      courierRate: 69,
+      deliveryDate: null,
+      pricing: null,
     };
   }
 
-  // 1. Attempt backend logistics serviceability check
+  // 1. Live Shadowfax Logistics Serviceability & Pricing Query
   try {
     const res = await baseApi.post("/shipments/serviceability", {
       deliveryPincode: cleanPincode,
-      pickupPincode: "122002", // Starling Tales Gurugram atelier
+      pickupPincode: "560001",
       paymentMode: options.paymentMode || "PREPAID",
       subtotal: options.subtotal || 1000,
+      weight: options.weight || 500,
     });
 
     if (res.data) {
+      const data = res.data;
+      const isServiceable = data.serviceable !== false && data.status !== "NON_SERVICEABLE";
+      const fee = Number(data.shippingFee ?? data.pricing?.finalShippingFee ?? 69);
+      const courierRate = Number(data.courierRate ?? data.pricing?.courierRate ?? fee);
+
       return {
-        serviceable: res.data.serviceable !== false,
+        serviceable: isServiceable,
         pincode: cleanPincode,
-        estimatedDays: res.data.estimatedDays || (cleanPincode.startsWith("1") ? 2 : 3),
-        courierPartner: res.data.courierPartner || "Shadowfax / BlueDart Express",
-        codAvailable: res.data.codAvailable !== false,
-        message: res.data.message || `Delivery verified for PIN ${cleanPincode}.`,
+        estimatedDays: data.estimatedDays || (cleanPincode.startsWith("1") ? 2 : 3),
+        deliveryDate: data.deliveryDate || null,
+        courierPartner: data.courierPartner || "Shadowfax Logistics",
+        codAvailable: isServiceable ? data.codAvailable !== false : false,
+        shippingFee: fee,
+        courierRate: courierRate,
+        pricing: data.pricing || null,
+        planName: data.pricing?.planName || "Shadowfax Surface Express",
+        zoneDescription: data.pricing?.zoneDescription || "",
+        message:
+          data.message ||
+          (isServiceable
+            ? `Shadowfax Express delivery verified for PIN ${cleanPincode} • ₹${fee}`
+            : `Shadowfax delivery is currently unavailable for PIN ${cleanPincode}.`),
       };
     }
   } catch (err) {
-    console.warn("Backend live courier check responded, using regional matrix:", err?.message);
+    console.warn("Backend Shadowfax courier check responded, using regional matrix:", err?.message);
   }
 
-  // 2. Intelligent Regional Matrix fallback
+  // 2. Regional Shadowfax Matrix fallback
   const isNCR =
     cleanPincode.startsWith("11") ||
     cleanPincode.startsWith("12") ||
@@ -60,18 +80,31 @@ export const checkPincodeServiceabilityApi = async (pincode, options = {}) => {
   deliveryDate.setDate(deliveryDate.getDate() + days);
 
   const formattedDate = deliveryDate.toLocaleDateString("en-IN", {
-    weekday: "short",
-    month: "short",
+    weekday: "long",
     day: "numeric",
+    month: "short",
   });
+
+  const fallbackFee = isNCR ? 59 : isMetro ? 69 : 79;
 
   return {
     serviceable: true,
     pincode: cleanPincode,
     estimatedDays: days,
     estimatedDateText: formattedDate,
-    courierPartner: "Starling Archival Courier",
+    deliveryDate: formattedDate,
+    courierPartner: "Shadowfax Logistics",
+    planName: "Shadowfax Surface Express",
+    zoneDescription: isNCR ? "NCR Express Hub" : isMetro ? "Metro Express Delivery" : "National Express",
     codAvailable: true,
-    message: `Delivery available by ${formattedDate} (${days} business days). Cash on Delivery eligible. ✨`,
+    shippingFee: fallbackFee,
+    courierRate: fallbackFee,
+    pricing: {
+      finalShippingFee: fallbackFee,
+      courierRate: fallbackFee,
+      planName: "Shadowfax Surface Express",
+      zoneDescription: isMetro ? "Metro Express Delivery" : "National Express",
+    },
+    message: `Shadowfax Express delivery by ${formattedDate} (${days} business days) • ₹${fallbackFee} shipping. COD eligible.`,
   };
 };

@@ -13,6 +13,7 @@ import {
   Tag,
   MapPin,
   Gift,
+  AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useStore } from "../context/StoreContext";
@@ -40,6 +41,7 @@ export default function CheckoutPage() {
     discountAmount = 0,
     deliveryPincode = "",
     pincodeInfo,
+    shippingFee: contextShippingFee,
     verifyDeliveryPincode,
   } = useStore();
 
@@ -79,9 +81,22 @@ export default function CheckoutPage() {
     }
   }, [deliveryPincode, formData.postalCode]);
 
+  const isUnserviceable = pincodeInfo && pincodeInfo.serviceable === false;
   const isShippingWaived = appliedCoupon?.code === "HEIRLOOM";
-  const shipping = isFreeShipping || cartSubtotal === 0 || isShippingWaived ? 0 : 99;
-  const grandTotal = Math.max(0, cartSubtotal - (discountAmount || 0) + shipping);
+  const shadowfaxRate =
+    pincodeInfo?.shippingFee != null
+      ? Number(pincodeInfo.shippingFee)
+      : (contextShippingFee ?? 69);
+  const shipping =
+    isUnserviceable
+      ? 0
+      : isFreeShipping || cartSubtotal === 0 || isShippingWaived
+      ? 0
+      : shadowfaxRate;
+  const grandTotal = Math.max(
+    0,
+    cartSubtotal - (discountAmount || 0) + (isUnserviceable ? 0 : shipping)
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -127,6 +142,8 @@ export default function CheckoutPage() {
       discountAmount: discountAmount || 0,
       couponCode: appliedCoupon?.code || null,
       shippingPrice: shipping,
+      courierPartner: pincodeInfo?.courierPartner || "Shadowfax Logistics",
+      shippingPlan: pincodeInfo?.planName || "Shadowfax Surface Express",
       taxPrice: 0,
       totalAmount: grandTotal,
       notes: formData.notes,
@@ -167,6 +184,14 @@ export default function CheckoutPage() {
 
     if (!/^[1-9][0-9]{5}$/.test(formData.postalCode.trim())) {
       toast.error("Please provide a valid 6-digit Indian PIN code.");
+      return;
+    }
+
+    if (isUnserviceable) {
+      toast.error(
+        pincodeInfo?.message ||
+          `Shadowfax courier delivery is unavailable for PIN ${formData.postalCode}. Please update your address.`
+      );
       return;
     }
 
@@ -480,10 +505,42 @@ export default function CheckoutPage() {
                     placeholder="6-digit Indian PIN (e.g. 110001)"
                     className="w-full px-4 py-2.5 bg-[#FAF7F2] border border-[#E8DFC8] rounded-xl text-xs font-mono text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#37463f]/30"
                   />
-                  {pincodeInfo && pincodeInfo.serviceable && (
-                    <span className="text-[10px] text-emerald-700 flex items-center gap-1 mt-1 font-semibold">
-                      <CheckCircle2 size={11} /> Verified: {pincodeInfo.message}
-                    </span>
+                  {pincodeInfo && (
+                    <div className="mt-2.5 p-3 rounded-2xl border transition-all text-xs bg-[#FAF7F2] border-[#E8DFC8]">
+                      {pincodeInfo.serviceable ? (
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-[#37463f] flex items-center gap-1.5 text-xs">
+                              <Truck size={13} className="text-[#C5A880]" />
+                              <span>{pincodeInfo.courierPartner || "Shadowfax Logistics"}</span>
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
+                              {shipping === 0 ? "Complimentary Shipping" : `₹${shipping} Express Rate`}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-neutral-600">
+                            {pincodeInfo.deliveryDate
+                              ? `Estimated doorstep arrival: ${pincodeInfo.deliveryDate} (${pincodeInfo.estimatedDays || 3} business days)`
+                              : pincodeInfo.message}
+                          </p>
+                          {pincodeInfo.pricing?.zoneDescription && (
+                            <p className="text-[10px] text-neutral-400">
+                              Zone: {pincodeInfo.pricing.zoneDescription} • {pincodeInfo.planName || "Shadowfax Surface Express"}
+                            </p>
+                          )}
+                          {pincodeInfo.codAvailable && (
+                            <span className="inline-block text-[10px] text-emerald-700 font-semibold">
+                              ✓ Cash on Delivery verified for PIN {formData.postalCode}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-rose-600 text-xs">
+                          <AlertCircle size={13} />
+                          <span>{pincodeInfo.message || `Shadowfax courier currently unavailable for PIN ${formData.postalCode}.`}</span>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -614,9 +671,29 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <div className="flex justify-between text-neutral-600">
-                <span>Archival Courier Shipping</span>
-                <span>{shipping === 0 ? "Complimentary (FREE)" : formatPrice(shipping)}</span>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span className="flex items-center gap-1.5">
+                  <Truck
+                    size={12}
+                    className={isUnserviceable ? "text-rose-500" : "text-[#C5A880]"}
+                  />
+                  <span>
+                    {pincodeInfo?.courierPartner || "Shadowfax"} Express Shipping
+                  </span>
+                </span>
+                <span className="font-semibold text-neutral-800">
+                  {isUnserviceable ? (
+                    <span className="text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-bold uppercase text-[10px] tracking-wider">
+                      Not Available
+                    </span>
+                  ) : shipping === 0 ? (
+                    <span className="text-emerald-700 font-bold uppercase text-[10px] tracking-wider">
+                      Complimentary (FREE)
+                    </span>
+                  ) : (
+                    formatPrice(shipping)
+                  )}
+                </span>
               </div>
 
               <div className="flex justify-between text-neutral-600">
@@ -635,11 +712,20 @@ export default function CheckoutPage() {
             <button
               type="submit"
               form="checkout-form"
-              disabled={loading}
-              className="w-full py-4 bg-[#37463f] hover:bg-[#2C3E35] text-[#FAF6F0] rounded-2xl text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all cursor-pointer disabled:opacity-60"
+              disabled={loading || isUnserviceable}
+              className={`w-full py-4 rounded-2xl text-xs font-semibold uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg transition-all ${
+                isUnserviceable
+                  ? "bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-none"
+                  : "bg-[#37463f] hover:bg-[#2C3E35] text-[#FAF6F0] hover:shadow-xl cursor-pointer disabled:opacity-60"
+              }`}
             >
               {loading ? (
                 <span>Securing Order...</span>
+              ) : isUnserviceable ? (
+                <>
+                  <AlertCircle size={14} className="text-rose-500" />
+                  <span>Delivery Unavailable for PIN {formData.postalCode}</span>
+                </>
               ) : (
                 <>
                   <Lock size={14} />
@@ -647,6 +733,12 @@ export default function CheckoutPage() {
                 </>
               )}
             </button>
+
+            {isUnserviceable && (
+              <p className="text-[11px] text-rose-600 text-center font-medium bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+                Shadowfax courier currently does not service PIN {formData.postalCode}. Please update your delivery PIN code to complete this order.
+              </p>
+            )}
 
             <div className="flex items-center justify-center gap-2 text-[10px] text-neutral-400 uppercase tracking-wider font-semibold">
               <ShieldCheck size={12} className="text-[#C5A880]" />

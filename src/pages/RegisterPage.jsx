@@ -83,10 +83,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#E8DFD2] selection:text-[#2C3E35]">
-      <div className="w-full max-w-md bg-white border border-[#E8DFC8]/80 rounded-3xl p-8 sm:p-10 shadow-2xl space-y-6">
-        <div className="text-center space-y-3">
-          <div className="w-16 h-16 bg-[#FAF7F2] rounded-2xl p-2 mx-auto border border-[#E8DFC8] shadow-sm flex items-center justify-center">
+    <div className="flex-1 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8 selection:bg-[#E8DFD2] selection:text-[#2C3E35]">
+      <div className="w-full max-w-xl bg-white border border-[#E8DFC8]/80 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 bg-[#FAF7F2] rounded-2xl p-1.5 mx-auto border border-[#E8DFC8] shadow-xs flex items-center justify-center">
             <img
               src={starlingLogo}
               alt="Starling Tales"
@@ -94,22 +94,21 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#37463f]/10 text-[#37463f] text-xs font-serif italic">
-            <Sparkles size={12} className="text-[#C5A880]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#37463f]/10 text-[#37463f] text-[11px] font-serif italic">
+            <Sparkles size={11} className="text-[#C5A880]" />
             <span>Begin Your Chronicle</span>
           </div>
 
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#2C3E35]">
             Create Account
           </h1>
-          <p className="text-xs text-neutral-500 max-w-xs mx-auto">
-            Join the Starling Tales family to curate nursery keepsakes, archival
-            hampers, and milestones.
+          <p className="text-xs text-neutral-500 max-w-md mx-auto">
+            Join the Starling Tales family to curate nursery keepsakes, archival hampers, and milestones.
           </p>
         </div>
 
         {/* Google Sign-in Option */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <GoogleAuthButton
             text="Sign up with Google"
             onSuccessRedirect={() => navigate(redirectTo, { replace: true })}
@@ -124,131 +123,137 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-neutral-600 mb-1">
-              Full Name *
-            </label>
-            <div className="relative">
-              <User
-                size={15}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <input
-                type="text"
-                required
-                placeholder="Elena Vance"
-                value={formData.name}
-                onChange={(e) => {
-                  setFormData({ ...formData, name: e.target.value });
-                  if (errors.name) setErrors({ ...errors, name: null });
-                }}
-                className={`w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#37463f]/30 ${
-                  errors.name ? "border-red-400" : "border-[#E8DFC8]"
-                }`}
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Full Name */}
+            <div>
+              <label className="block text-[10px] font-serif font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                Full Name *
+              </label>
+              <div className="relative">
+                <User
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="Elena Vance"
+                  value={formData.name}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (errors.name) setErrors({ ...errors, name: null });
+                  }}
+                  className={`w-full pl-9 pr-3 py-2 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-1.5 focus:ring-[#37463f] ${
+                    errors.name ? "border-red-400" : "border-[#E8DFC8]"
+                  }`}
+                />
+              </div>
+              {errors.name && (
+                <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1">
+                  <AlertCircle size={10} /> {errors.name}
+                </p>
+              )}
             </div>
-            {errors.name && (
-              <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
-                <AlertCircle size={11} /> {errors.name}
-              </p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-neutral-600 mb-1">
-              Email Address *
-            </label>
-            <div className="relative">
-              <Mail
-                size={15}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <input
-                type="email"
-                required
-                placeholder="storyteller@starlingtales.com"
-                value={formData.email}
-                onChange={(e) => {
-                  setFormData({ ...formData, email: e.target.value });
-                  if (errors.email) setErrors({ ...errors, email: null });
-                }}
-                className={`w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#37463f]/30 ${
-                  errors.email ? "border-red-400" : "border-[#E8DFC8]"
-                }`}
-              />
+            {/* Phone Number */}
+            <div>
+              <label className="block text-[10px] font-serif font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                Phone Number (India) *
+              </label>
+              <div className="relative">
+                <Phone
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                />
+                <input
+                  type="tel"
+                  required
+                  placeholder="9876543210"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                    if (errors.phone) setErrors({ ...errors, phone: null });
+                  }}
+                  className={`w-full pl-9 pr-3 py-2 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-1.5 focus:ring-[#37463f] ${
+                    errors.phone ? "border-red-400" : "border-[#E8DFC8]"
+                  }`}
+                />
+              </div>
+              {errors.phone && (
+                <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1">
+                  <AlertCircle size={10} /> {errors.phone}
+                </p>
+              )}
             </div>
-            {errors.email && (
-              <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
-                <AlertCircle size={11} /> {errors.email}
-              </p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-neutral-600 mb-1">
-              Phone Number (India) *
-            </label>
-            <div className="relative">
-              <Phone
-                size={15}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <input
-                type="tel"
-                required
-                placeholder="9876543210"
-                value={formData.phone}
-                onChange={(e) => {
-                  setFormData({ ...formData, phone: e.target.value });
-                  if (errors.phone) setErrors({ ...errors, phone: null });
-                }}
-                className={`w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#37463f]/30 ${
-                  errors.phone ? "border-red-400" : "border-[#E8DFC8]"
-                }`}
-              />
+            {/* Email Address */}
+            <div>
+              <label className="block text-[10px] font-serif font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                Email Address *
+              </label>
+              <div className="relative">
+                <Mail
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="storyteller@starlingtales.com"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (errors.email) setErrors({ ...errors, email: null });
+                  }}
+                  className={`w-full pl-9 pr-3 py-2 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-1.5 focus:ring-[#37463f] ${
+                    errors.email ? "border-red-400" : "border-[#E8DFC8]"
+                  }`}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1">
+                  <AlertCircle size={10} /> {errors.email}
+                </p>
+              )}
             </div>
-            {errors.phone && (
-              <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
-                <AlertCircle size={11} /> {errors.phone}
-              </p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-neutral-600 mb-1">
-              Password *
-            </label>
-            <div className="relative">
-              <Lock
-                size={15}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder="At least 6 characters"
-                value={formData.password}
-                onChange={(e) => {
-                  setFormData({ ...formData, password: e.target.value });
-                  if (errors.password) setErrors({ ...errors, password: null });
-                }}
-                className={`w-full pl-10 pr-10 py-2.5 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#37463f]/30 ${
-                  errors.password ? "border-red-400" : "border-[#E8DFC8]"
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
-              >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
+            {/* Password with Eye Toggle */}
+            <div>
+              <label className="block text-[10px] font-serif font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                Password *
+              </label>
+              <div className="relative">
+                <Lock
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="At least 6 characters"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    if (errors.password) setErrors({ ...errors, password: null });
+                  }}
+                  className={`w-full pl-9 pr-9 py-2 bg-[#FAF7F2] border rounded-xl text-xs text-neutral-800 focus:outline-none focus:ring-1.5 focus:ring-[#37463f] ${
+                    errors.password ? "border-red-400" : "border-[#E8DFC8]"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1">
+                  <AlertCircle size={10} /> {errors.password}
+                </p>
+              )}
             </div>
-            {errors.password && (
-              <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1">
-                <AlertCircle size={11} /> {errors.password}
-              </p>
-            )}
           </div>
 
           <button

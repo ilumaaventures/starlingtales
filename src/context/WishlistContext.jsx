@@ -18,11 +18,44 @@ import {
 
 const WishlistContext = createContext(null);
 
+// Normalize product structure returned from API or stored in localStorage
+const normalizeWishlistProduct = (item) => {
+  if (!item) return null;
+  const id = item._id || item.id;
+  const image =
+    item.image ||
+    item.images?.[0]?.url ||
+    (typeof item.images?.[0] === "string" ? item.images[0] : "") ||
+    "";
+  const categoryName =
+    typeof item.category === "object" && item.category !== null
+      ? item.category?.name || item.category?.title || "General"
+      : typeof item.category === "string" && !/^[0-9a-fA-F]{24}$/.test(item.category.trim())
+      ? item.category.trim()
+      : "General";
+
+  return {
+    ...item,
+    _id: id,
+    id: id,
+    name: item.name || "Keepsake",
+    price: Number(item.price) || 0,
+    originalPrice:
+      Number(item.originalPrice) || Number(item.compareAtPrice) || 0,
+    image: image,
+    category: categoryName,
+    inStock: item.stock !== undefined ? item.stock > 0 : true,
+  };
+};
+
 export function WishlistProvider({ children }) {
   const { isAuthenticated } = useAuth();
-  const [wishlistItems, setWishlistItems] = useState(() =>
-    readStorage("starling_wishlist", [])
-  );
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    const raw = readStorage("starling_wishlist", []);
+    return Array.isArray(raw)
+      ? raw.map(normalizeWishlistProduct).filter(Boolean)
+      : [];
+  });
   const [isLoading, setIsLoading] = useState(false);
   const hasSyncedAuthRef = useRef(false);
 
@@ -34,34 +67,6 @@ export function WishlistProvider({ children }) {
       console.warn("Could not sync wishlist to localStorage", e);
     }
   }, [wishlistItems]);
-
-  // Normalize product structure returned from API
-  const normalizeWishlistProduct = (item) => {
-    if (!item) return null;
-    const id = item._id || item.id;
-    const image =
-      item.image ||
-      item.images?.[0]?.url ||
-      (typeof item.images?.[0] === "string" ? item.images[0] : "") ||
-      "";
-    const categoryName =
-      typeof item.category === "object"
-        ? item.category?.name || "General"
-        : item.category || "General";
-
-    return {
-      ...item,
-      _id: id,
-      id: id,
-      name: item.name || "Keepsake",
-      price: Number(item.price) || 0,
-      originalPrice:
-        Number(item.originalPrice) || Number(item.compareAtPrice) || 0,
-      image: image,
-      category: categoryName,
-      inStock: item.stock !== undefined ? item.stock > 0 : true,
-    };
-  };
 
   // Fetch wishlist from backend API
   const fetchWishlist = useCallback(async () => {

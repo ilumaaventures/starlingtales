@@ -42,6 +42,7 @@ export default function CartPage() {
     pincodeInfo,
     isCheckingPincode,
     verifyDeliveryPincode,
+    shippingFee: contextShippingFee,
     clearPincode,
   } = useStore();
 
@@ -51,13 +52,22 @@ export default function CartPage() {
   const [pinInput, setPinInput] = useState(deliveryPincode || "");
   const [pinError, setPinError] = useState("");
 
-  // Base shipping calculation
+  // Base shipping calculation with dynamic Shadowfax logistics pricing
+  const isUnserviceable = pincodeInfo && pincodeInfo.serviceable === false;
   const isShippingWaived = appliedCoupon?.code === "HEIRLOOM";
+  const shadowfaxRate =
+    pincodeInfo?.shippingFee != null
+      ? Number(pincodeInfo.shippingFee)
+      : (contextShippingFee ?? 69);
   const shipping =
-    isFreeShipping || cartSubtotal === 0 || isShippingWaived ? 0 : 99;
+    isUnserviceable
+      ? 0
+      : isFreeShipping || cartSubtotal === 0 || isShippingWaived
+      ? 0
+      : shadowfaxRate;
   const grandTotal = Math.max(
     0,
-    cartSubtotal - (discountAmount || 0) + shipping,
+    cartSubtotal - (discountAmount || 0) + (isUnserviceable ? 0 : shipping),
   );
 
   // Handle coupon apply
@@ -91,7 +101,7 @@ export default function CartPage() {
 
     try {
       await verifyDeliveryPincode(clean);
-    } catch (_) {}
+    } catch (_) { }
   };
 
   return (
@@ -363,11 +373,10 @@ export default function CartPage() {
                 {/* Serviceability Result Card */}
                 {pincodeInfo && (
                   <div
-                    className={`p-3.5 rounded-2xl border text-xs space-y-1.5 transition-all ${
-                      pincodeInfo.serviceable
-                        ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
-                        : "bg-rose-50/80 border-rose-200 text-rose-900"
-                    }`}
+                    className={`p-3.5 rounded-2xl border text-xs space-y-1.5 transition-all ${pincodeInfo.serviceable
+                      ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
+                      : "bg-rose-50/80 border-rose-200 text-rose-900"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-semibold flex items-center gap-1.5">
@@ -388,26 +397,36 @@ export default function CartPage() {
                           </>
                         )}
                       </span>
-                      {pincodeInfo.codAvailable && (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-200/60 text-emerald-900 text-[10px] font-bold uppercase tracking-wider">
-                          COD Available
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        {pincodeInfo.serviceable && (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-200/60 text-emerald-900 text-[10px] font-bold uppercase tracking-wider">
+                            {shipping === 0 ? "Free Delivery" : `₹${shadowfaxRate} Rate`}
+                          </span>
+                        )}
+                        {pincodeInfo.codAvailable && (
+                          <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 text-[10px] font-bold uppercase tracking-wider">
+                            COD
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <p className="text-[11px] opacity-90 leading-relaxed">
-                      {pincodeInfo.message}
+                      {pincodeInfo.deliveryDate
+                        ? `Shadowfax Express delivery by ${pincodeInfo.deliveryDate} (${pincodeInfo.estimatedDays || 3} business days)`
+                        : pincodeInfo.message}
                     </p>
 
                     {pincodeInfo.courierPartner && (
-                      <div className="pt-1 text-[10px] opacity-75 flex items-center gap-2">
-                        <span>
-                          Courier Partner: {pincodeInfo.courierPartner}
+                      <div className="pt-1 text-[10px] opacity-75 flex flex-wrap items-center gap-2">
+                        <span className="font-medium">
+                          Courier: {pincodeInfo.courierPartner}
                         </span>
-                        {pincodeInfo.estimatedDays && (
-                          <span>
-                            • Est. {pincodeInfo.estimatedDays} business days
-                          </span>
+                        {pincodeInfo.planName && (
+                          <span>• {pincodeInfo.planName}</span>
+                        )}
+                        {pincodeInfo.pricing?.zoneDescription && (
+                          <span>• {pincodeInfo.pricing.zoneDescription}</span>
                         )}
                       </div>
                     )}
@@ -511,10 +530,22 @@ export default function CartPage() {
                     </div>
                   )}
 
-                  <div className="flex justify-between text-text-muted">
-                    <span>Courier Delivery (India)</span>
+                  <div className="flex justify-between items-center text-text-muted">
+                    <span className="flex items-center gap-1.5">
+                      <Truck
+                        size={12}
+                        className={isUnserviceable ? "text-rose-500" : "text-[#C5A880]"}
+                      />
+                      <span>
+                        {pincodeInfo?.courierPartner || "Shadowfax"} Express Shipping
+                      </span>
+                    </span>
                     <span className="font-bold text-text-dark">
-                      {shipping === 0 ? (
+                      {isUnserviceable ? (
+                        <span className="text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider text-[10px]">
+                          Not Available
+                        </span>
+                      ) : shipping === 0 ? (
                         <span className="text-emerald-700 font-bold uppercase tracking-wider text-[11px]">
                           Free
                         </span>
@@ -524,12 +555,7 @@ export default function CartPage() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-text-muted">
-                    <span>Gift Packaging & Wax Seal</span>
-                    <span className="text-emerald-700 font-bold uppercase tracking-wider text-[11px]">
-                      Complimentary
-                    </span>
-                  </div>
+
 
                   <div className="pt-3 border-t border-cream-dark flex justify-between font-display text-base font-bold text-text-dark">
                     <span>Estimated Total</span>
@@ -552,13 +578,29 @@ export default function CartPage() {
                   />
                 </div>
 
-                <Link
-                  to="/checkout"
-                  state={{ giftNote }}
-                  className="w-full py-4 bg-text-dark text-cream hover:bg-text-dark/90 font-sans text-xs tracking-widest uppercase font-bold rounded-xl transition shadow-sm text-center block cursor-pointer"
-                >
-                  Proceed to Checkout • {formatPrice(grandTotal)}
-                </Link>
+                {isUnserviceable ? (
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full py-4 bg-neutral-300 text-neutral-500 font-sans text-xs tracking-widest uppercase font-bold rounded-xl shadow-none text-center flex items-center justify-center gap-2 cursor-not-allowed"
+                    >
+                      <AlertCircle size={15} className="text-rose-500" />
+                      <span>Delivery Unavailable for PIN {pincodeInfo.pincode}</span>
+                    </button>
+                    <p className="text-[11px] text-rose-600 text-center font-medium bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+                      Shadowfax delivery is unavailable for PIN {pincodeInfo.pincode}. Please verify an alternate delivery PIN code to proceed.
+                    </p>
+                  </div>
+                ) : (
+                  <Link
+                    to="/checkout"
+                    state={{ giftNote }}
+                    className="w-full py-4 bg-text-dark text-cream hover:bg-text-dark/90 font-sans text-xs tracking-widest uppercase font-bold rounded-xl transition shadow-sm text-center block cursor-pointer"
+                  >
+                    Proceed to Checkout • {formatPrice(grandTotal)}
+                  </Link>
+                )}
               </div>
             </div>
           </div>

@@ -253,7 +253,7 @@ export default function StarlingFooter() {
           <div className="flex items-center gap-1 font-serif text-[9px] lowercase italic">
             <span>crafted with</span>
             <Heart size={10} className="text-[#C85C5C] fill-[#C85C5C]" />
-            <span>in resident mills</span>
+            <span>by ILUMAA Studio</span>
           </div>
         </div>
       </div>

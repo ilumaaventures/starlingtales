@@ -5,6 +5,14 @@ import GetStartedButton from './GetStartedButton';
 import { formatPrice } from '../constants';
 
 export default function ProductCard({ product, isWishlisted, onWishlist, onQuickView, onAddToCart }) {
+  const categoryLabel =
+    typeof product?.category === "object" && product.category !== null
+      ? product.category.name || product.category.title || ""
+      : typeof product?.category === "string" &&
+        !/^[0-9a-fA-F]{24}$/.test(product.category.trim())
+      ? product.category.trim()
+      : "";
+
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-white border border-[#E8DFC8]/40 shadow-[0_2px_12px_rgba(44,62,53,0.07)] cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(44,62,53,0.12)] flex flex-col h-full justify-between" data-product-id={product.id}>
       <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF7F2] flex items-center justify-center p-3">
@@ -84,9 +92,9 @@ export default function ProductCard({ product, isWishlisted, onWishlist, onQuick
 
       <div className="p-5 pb-5 flex flex-col flex-1 justify-between">
         <div>
-          {product.category && !/^[0-9a-fA-F]{24}$/.test(product.category) && (
+          {categoryLabel && (
             <p className="mb-1 text-blue-soft text-[10px] font-medium tracking-widest uppercase">
-              {product.category}
+              {categoryLabel}
             </p>
           )}
           <h3 className="mb-1 text-text-dark font-display text-lg font-semibold line-clamp-2 min-h-[56px]">{product.name}</h3>

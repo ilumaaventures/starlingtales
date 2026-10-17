@@ -315,8 +315,10 @@ export default function StarlingPolicies() {
                     We package every order in sustainable, organic muslin pouches and protective gift boxing.
                   </p>
                   <ul className="list-disc pl-5 space-y-2 text-[#2C3E35]/80">
-                    <li><strong>Dispatch SLA:</strong> In-stock items are dispatched within 24 to 48 hours.</li>
-                    <li><strong>Delivery:</strong> Delivered within 3-5 business days across India.</li>
+                    <li><strong>Dispatch SLA:</strong> In-stock items are dispatched within 24 to 48 hours from our ateliers.</li>
+                    <li><strong>Courier Partner:</strong> Powered by Shadowfax Logistics Express with live doorstep tracking and SMS dispatch alerts.</li>
+                    <li><strong>Calculated Shipping Rates:</strong> Live courier pricing calculated via Shadowfax Logistics (from ₹69 express delivery, or complimentary free delivery on orders ₹5,000+).</li>
+                    <li><strong>Delivery Timelines:</strong> 2 to 4 business days across verified Indian postal PIN codes.</li>
                   </ul>
                 </div>
               )}

@@ -105,8 +105,18 @@ export default function CartDrawer({
     return sum + unitPrice * (item.quantity || 1);
   }, 0);
 
+  const isUnserviceable =
+    store.pincodeInfo && store.pincodeInfo.serviceable === false;
+  const shadowfaxRate =
+    store.pincodeInfo?.shippingFee != null
+      ? Number(store.pincodeInfo.shippingFee)
+      : (store.shippingFee ?? 69);
   const shipping =
-    subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : 99;
+    isUnserviceable
+      ? 0
+      : subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 || store.isShippingWaived
+      ? 0
+      : shadowfaxRate;
   const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
 
   return (
@@ -280,8 +290,18 @@ export default function CartDrawer({
         {actualCart.length > 0 && (
           <div className="p-6 border-t border-cream-dark bg-white space-y-3">
             <div className="flex items-center justify-between text-xs text-text-muted">
-              <span>Shipping</span>
-              <span>{shipping === 0 ? "FREE" : formatPrice(shipping)}</span>
+              <span>{store.pincodeInfo?.courierPartner || "Shadowfax"} Shipping</span>
+              <span>
+                {isUnserviceable ? (
+                  <span className="text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider text-[10px]">
+                    Not Available
+                  </span>
+                ) : shipping === 0 ? (
+                  "FREE"
+                ) : (
+                  formatPrice(shipping)
+                )}
+              </span>
             </div>
             {store.discountAmount > 0 && (
               <div className="flex items-center justify-between text-xs text-emerald-800 font-medium">
@@ -293,22 +313,34 @@ export default function CartDrawer({
               <span>Subtotal</span>
               <span>
                 {formatPrice(
-                  Math.max(0, subtotal - (store.discountAmount || 0) + shipping)
+                  Math.max(0, subtotal - (store.discountAmount || 0) + (isUnserviceable ? 0 : shipping))
                 )}
               </span>
             </div>
 
             <button
               type="button"
+              disabled={isUnserviceable}
               onClick={handleProceedCheckout}
-              className="w-full py-3.5 px-4 bg-text-dark text-cream hover:bg-text-dark/90 font-sans text-xs tracking-widest uppercase font-bold rounded-xl transition shadow-sm cursor-pointer"
+              className={`w-full py-3.5 px-4 font-sans text-xs tracking-widest uppercase font-bold rounded-xl transition shadow-sm ${
+                isUnserviceable
+                  ? "bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-none"
+                  : "bg-text-dark text-cream hover:bg-text-dark/90 cursor-pointer"
+              }`}
             >
-              Proceed to Keepsake Bag (
-              {formatPrice(
-                Math.max(0, subtotal - (store.discountAmount || 0) + shipping)
+              {isUnserviceable ? (
+                `Delivery Unavailable (PIN ${store.pincodeInfo.pincode})`
+              ) : (
+                `Proceed to Keepsake Bag (${formatPrice(
+                  Math.max(0, subtotal - (store.discountAmount || 0) + shipping)
+                )})`
               )}
-              )
             </button>
+            {isUnserviceable && (
+              <p className="text-[11px] text-rose-600 text-center font-medium bg-rose-50 border border-rose-200 p-2 rounded-xl">
+                Shadowfax courier is unavailable for PIN {store.pincodeInfo.pincode}.
+              </p>
+            )}
           </div>
         )}
       </aside>

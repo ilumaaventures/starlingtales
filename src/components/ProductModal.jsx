@@ -288,7 +288,7 @@ export default function ProductModal({
           <div className="overflow-y-auto p-4 sm:p-6 lg:p-10 pr-9 pl-7.5">
             <div className="flex items-center gap-2.5 mb-2">
               <span className="text-blue-soft text-xs font-medium tracking-widest uppercase">
-                {product.category}
+                {typeof product?.category === "object" && product.category !== null ? product.category.name || product.category.title || "" : typeof product?.category === "string" && !/^[0-9a-fA-F]{24}$/.test(product.category.trim()) ? product.category.trim() : ""}
               </span>
               {product.badge ? (
                 <span
