@@ -26,6 +26,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OrdersPage from "./pages/OrdersPage";
 import ProfilePage from "./pages/ProfilePage";
+import WishlistPage from "./pages/WishlistPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Scroll restoration helper
@@ -90,6 +91,10 @@ function MainLayout() {
           <Route path="/exchanges" element={<StarlingPolicies />} />
           <Route path="/refunds" element={<StarlingPolicies />} />
           <Route path="/shipping-policy" element={<StarlingPolicies />} />
+
+          {/* Wishlist */}
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/my-wishlist" element={<WishlistPage />} />
 
           {/* Bag & Checkout */}
           <Route path="/cart" element={<CartPage />} />

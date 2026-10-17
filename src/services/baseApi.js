@@ -22,6 +22,17 @@ baseApi.interceptors.request.use(
     const token = localStorage.getItem("starling_token") || localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      let guestId = localStorage.getItem("starling_guest_id");
+      if (!guestId) {
+        guestId =
+          "guest_" +
+          Math.random().toString(36).substring(2, 10) +
+          "_" +
+          Date.now().toString(36);
+        localStorage.setItem("starling_guest_id", guestId);
+      }
+      config.headers["X-Guest-Id"] = guestId;
     }
 
     return config;
