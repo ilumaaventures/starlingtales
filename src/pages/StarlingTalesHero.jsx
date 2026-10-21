@@ -98,8 +98,8 @@ Lovingly handcrafted, stitched with care and created with gentle fabrics. Every 
     activeBanner?.ctaLink ||
     activeBanner?.buttonLink ||
     (activeBanner?.targetId
-      ? `${storeHomePath}/product/${activeBanner.targetId}`
-      : `${storeHomePath}/products`);
+      ? `/product/${activeBanner.targetId}`
+      : `/products`);
 
   const image =
     activeBanner?.image ||
