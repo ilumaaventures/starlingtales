@@ -215,6 +215,61 @@ export function AuthProvider({ children }) {
     window.dispatchEvent(new Event("starling_user_logged_out"));
   }, []);
 
+  const forgotPassword = useCallback(async (email) => {
+    setLoading(true);
+    try {
+      const data = await authApi.forgotPasswordApi(email);
+      toast.success(data?.message || "Verification code sent to your email! ✨");
+      return data;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to send reset code";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const verifyOtp = useCallback(async ({ email, otp }) => {
+    setLoading(true);
+    try {
+      const data = await authApi.verifyOtpApi({ email, otp });
+      toast.success(data?.message || "Security code verified! ✨");
+      return data;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Invalid or expired code";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const resetPassword = useCallback(async ({ resetToken, token, email, newPassword, password }) => {
+    setLoading(true);
+    try {
+      const data = await authApi.resetPasswordApi({ resetToken, token, email, newPassword, password });
+      toast.success("Your password has been successfully restored! 🌿");
+      return data;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to update password";
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const [initialForgotEmail, setInitialForgotEmail] = useState("");
+
+  const openForgotModal = useCallback((email = "") => {
+    if (email && typeof email === "string") {
+      setInitialForgotEmail(email);
+    }
+    setAuthModalMode("forgot");
+    setAuthModalOpen(true);
+  }, []);
+
   const openLoginModal = useCallback((callback = null) => {
     setAuthModalMode("login");
     setOnAuthSuccessCallback(() => callback);
@@ -242,11 +297,17 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     updateProfile,
     logout,
+    forgotPassword,
+    verifyOtp,
+    resetPassword,
     authModalOpen,
     authModalMode,
     setAuthModalMode,
+    initialForgotEmail,
+    setInitialForgotEmail,
     openLoginModal,
     openRegisterModal,
+    openForgotModal,
     closeAuthModal,
   };
 

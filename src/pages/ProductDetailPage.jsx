@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Heart, ShoppingBag, CheckCircle2, ShieldCheck, Sparkles, Star } from "lucide-react";
 import toast from "react-hot-toast";
 import { useStore } from "../context/StoreContext";
@@ -13,6 +13,7 @@ import { ProductDetailSkeleton } from "../components/StarlingSkeletons";
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { products = [], addToCart, toggleWishlist, isInWishlist } = useStore();
 
   const [product, setProduct] = useState(null);
@@ -20,6 +21,19 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(null);
+
+  // Auto-scroll to #reviews-section if requested in URL hash
+  useEffect(() => {
+    if (!loading && product && location.hash === "#reviews-section") {
+      const timer = setTimeout(() => {
+        const el = document.getElementById("reviews-section");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, product, location.hash]);
 
   useEffect(() => {
     // 1. Try finding in store products
@@ -152,6 +166,42 @@ export default function ProductDetailPage() {
                     "{product.tagline}"
                   </p>
                 )}
+
+                {/* Rating & Read Reviews Link */}
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                  <div className="flex items-center gap-0.5 text-[#C5A880]">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        size={14}
+                        className={
+                          s <= Math.round(product.rating || 5)
+                            ? "fill-[#C5A880] text-[#C5A880]"
+                            : "text-neutral-300"
+                        }
+                      />
+                    ))}
+                  </div>
+                  <span className="font-semibold text-text-dark">
+                    {(product.rating || 5).toFixed(1)}
+                  </span>
+                  <span className="text-[11px] text-text-muted">
+                    ({product.numReviews || product.reviews || 0} reviews)
+                  </span>
+                  <span className="text-text-muted">·</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById("reviews-section");
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
+                    className="text-xs text-[#37463f] underline hover:text-[#2C3E35] font-medium cursor-pointer"
+                  >
+                    Read reviews
+                  </button>
+                </div>
               </div>
 
               {/* Price & Badge */}

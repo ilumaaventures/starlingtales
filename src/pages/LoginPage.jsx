@@ -18,7 +18,7 @@ import GoogleAuthButton from "../components/GoogleAuthButton";
 import starlingLogo from "../assets/logo.jpeg";
 
 export default function LoginPage() {
-  const { login, loading, isAuthenticated } = useAuth();
+  const { login, loading, isAuthenticated, openForgotModal } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -230,12 +230,13 @@ export default function LoginPage() {
                   <label className="block text-[11px] font-semibold uppercase tracking-wider text-neutral-600">
                     Password
                   </label>
-                  <a
-                    href="mailto:support@starlingtales.com?subject=Starling%20Tales%20Password%20Assistance"
-                    className="text-[11px] text-[#37463f] hover:underline"
+                  <button
+                    type="button"
+                    onClick={() => openForgotModal(formData.email)}
+                    className="text-[11px] text-[#37463f] hover:underline font-medium cursor-pointer"
                   >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
                 <div className="relative">
                   <Lock

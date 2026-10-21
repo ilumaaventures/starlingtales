@@ -79,6 +79,30 @@ export const logoutApi = async () => {
 };
 
 export const forgotPasswordApi = async (email) => {
-  const res = await baseApi.post("/auth/forgot-password", { email });
+  const res = await baseApi.post("/auth/forgot-password", {
+    email: typeof email === "string" ? email.trim() : email,
+  });
   return res.data;
 };
+
+export const verifyOtpApi = async ({ email, otp }) => {
+  const res = await baseApi.post("/auth/verify-otp", {
+    email: typeof email === "string" ? email.trim().toLowerCase() : email,
+    otp: typeof otp === "string" ? otp.trim() : otp,
+  });
+  return res.data;
+};
+
+export const resetPasswordApi = async ({ resetToken, token, email, newPassword, password }) => {
+  const tokenToUse = resetToken || token;
+  const passwordToSet = newPassword || password;
+  const res = await baseApi.post("/auth/reset-password", {
+    resetToken: tokenToUse,
+    token: tokenToUse,
+    email: typeof email === "string" ? email.trim().toLowerCase() : email,
+    newPassword: passwordToSet,
+    password: passwordToSet,
+  });
+  return res.data;
+};
+

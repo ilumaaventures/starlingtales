@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Icon from "./Icon";
 import { formatPrice } from "../constants/constants";
 import { useStore } from "../context/StoreContext";
@@ -12,6 +13,9 @@ export default function ProductModal({
   onWishlist,
   onAddToCart,
 }) {
+  const navigate = useNavigate();
+  const [reviewsOpen, setReviewsOpen] = useState(false);
+  const reviewsAccordionRef = useRef(null);
   const storeContext = useStore() || {};
   const contextPolicies = Array.isArray(storeContext.policies)
     ? storeContext.policies
@@ -288,7 +292,13 @@ export default function ProductModal({
           <div className="overflow-y-auto p-4 sm:p-6 lg:p-10 pr-9 pl-7.5">
             <div className="flex items-center gap-2.5 mb-2">
               <span className="text-blue-soft text-xs font-medium tracking-widest uppercase">
-                {typeof product?.category === "object" && product.category !== null ? product.category.name || product.category.title || "" : typeof product?.category === "string" && !/^[0-9a-fA-F]{24}$/.test(product.category.trim()) ? product.category.trim() : ""}
+                {typeof product?.category === "object" &&
+                product.category !== null
+                  ? product.category.name || product.category.title || ""
+                  : typeof product?.category === "string" &&
+                      !/^[0-9a-fA-F]{24}$/.test(product.category.trim())
+                    ? product.category.trim()
+                    : ""}
               </span>
               {product.badge ? (
                 <span
@@ -334,12 +344,21 @@ export default function ProductModal({
                 ({product.reviews} reviews)
               </span>
               <span className="mx-2 text-text-muted">·</span>
-              <a
-                href="#reviews-section"
+              <button
+                type="button"
+                onClick={() => {
+                  setReviewsOpen(true);
+                  setTimeout(() => {
+                    reviewsAccordionRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }, 150);
+                }}
                 className="text-blue-soft text-xs underline"
               >
                 Read reviews
-              </a>
+              </button>
             </div>
 
             <div className="flex flex-wrap items-baseline gap-2.5 mb-4.5">
@@ -500,6 +519,41 @@ export default function ProductModal({
                     Gift box packaging is available at an additional cost of INR
                     500.
                   </p>
+                </div>
+              </details>
+
+              {/* Customer Reviews Accordion Section */}
+              <details
+                ref={reviewsAccordionRef}
+                id="reviews-section"
+                className="border-b border-cream-dark scroll-mt-6"
+                open={reviewsOpen}
+                onToggle={(e) => setReviewsOpen(e.currentTarget.open)}
+              >
+                <summary className="flex items-center justify-between py-4 text-text-dark cursor-pointer text-[13px] font-medium tracking-wide list-none select-none">
+                  <span className="flex items-center gap-2 font-bold text-[#2C3E35]">
+                    <span>Customer Reviews </span>
+                  </span>
+                  <Icon
+                    name="arrowRight"
+                    className="transition-transform duration-200 group-open:rotate-270 h-4 w-4 rotate-90"
+                  />
+                </summary>
+                <div className="pb-6">
+                  <div className="pt-3 border-t border-[#E8DFC8]/60 flex items-center justify-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        navigate(
+                          `/product/${product._id || product.id}#reviews-section`,
+                        );
+                      }}
+                      className="text-xs text-[#37463f] hover:text-[#2C3E35] underline font-semibold cursor-pointer"
+                    >
+                      Open Dedicated Product Page →
+                    </button>
+                  </div>
                 </div>
               </details>
 

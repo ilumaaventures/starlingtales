@@ -4,9 +4,9 @@ import baseApi from "./baseApi";
  * Fetch reviews for a specific product
  * GET /api/reviews/product/:productId
  */
-export const getProductReviews = async (productId) => {
+export const getProductReviews = async (productId, params = {}) => {
   try {
-    const res = await baseApi.get(`/reviews/product/${productId}`);
+    const res = await baseApi.get(`/reviews/product/${productId}`, { params });
     return res.data;
   } catch (err) {
     console.error("Error fetching product reviews:", err);
@@ -20,7 +20,10 @@ export const getProductReviews = async (productId) => {
  */
 export const createReview = async (reviewData) => {
   try {
-    const res = await baseApi.post("/reviews", reviewData);
+    const isFormData = typeof FormData !== "undefined" && reviewData instanceof FormData;
+    const res = await baseApi.post("/reviews", reviewData, {
+      headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+    });
     return res.data;
   } catch (err) {
     console.error("Error submitting review:", err);
