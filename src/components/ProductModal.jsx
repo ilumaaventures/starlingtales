@@ -522,41 +522,6 @@ export default function ProductModal({
                 </div>
               </details>
 
-              {/* Customer Reviews Accordion Section */}
-              <details
-                ref={reviewsAccordionRef}
-                id="reviews-section"
-                className="border-b border-cream-dark scroll-mt-6"
-                open={reviewsOpen}
-                onToggle={(e) => setReviewsOpen(e.currentTarget.open)}
-              >
-                <summary className="flex items-center justify-between py-4 text-text-dark cursor-pointer text-[13px] font-medium tracking-wide list-none select-none">
-                  <span className="flex items-center gap-2 font-bold text-[#2C3E35]">
-                    <span>Customer Reviews </span>
-                  </span>
-                  <Icon
-                    name="arrowRight"
-                    className="transition-transform duration-200 group-open:rotate-270 h-4 w-4 rotate-90"
-                  />
-                </summary>
-                <div className="pb-6">
-                  <div className="pt-3 border-t border-[#E8DFC8]/60 flex items-center justify-center gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onClose();
-                        navigate(
-                          `/product/${product._id || product.id}#reviews-section`,
-                        );
-                      }}
-                      className="text-xs text-[#37463f] hover:text-[#2C3E35] underline font-semibold cursor-pointer"
-                    >
-                      Open Dedicated Product Page →
-                    </button>
-                  </div>
-                </div>
-              </details>
-
               {/* DYNAMIC BUSINESS POLICIES FROM API / CONTEXT */}
               <details className="border-b border-cream-dark">
                 <summary className="flex items-center justify-between py-4 text-text-dark cursor-pointer text-[13px] font-medium tracking-wide list-none select-none">
@@ -605,7 +570,40 @@ export default function ProductModal({
                   {renderPolicyContent(foundRefund?.content, defaultRefundText)}
                 </div>
               </details>
-
+              {/* Customer Reviews Accordion Section */}
+              <details
+                ref={reviewsAccordionRef}
+                id="reviews-section"
+                className="border-b border-cream-dark scroll-mt-6"
+                open={reviewsOpen}
+                onToggle={(e) => setReviewsOpen(e.currentTarget.open)}
+              >
+                <summary className="flex items-center justify-between py-4 text-text-dark cursor-pointer text-[13px] font-medium tracking-wide list-none select-none">
+                  <span className="flex items-center gap-2 font-bold text-[#2C3E35]">
+                    <span>Customer Reviews </span>
+                  </span>
+                  <Icon
+                    name="arrowRight"
+                    className="transition-transform duration-200 group-open:rotate-270 h-4 w-4 rotate-90"
+                  />
+                </summary>
+                <div className="pb-6">
+                  <div className="pt-3 border-t border-[#E8DFC8]/60 flex items-center justify-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        navigate(
+                          `/product/${product._id || product.id}#reviews-section`,
+                        );
+                      }}
+                      className="text-xs text-[#37463f] hover:text-[#2C3E35] underline font-semibold cursor-pointer"
+                    >
+                      Open Dedicated Product Page →
+                    </button>
+                  </div>
+                </div>
+              </details>
               {foundShipping && (
                 <details className="border-b border-cream-dark">
                   <summary className="flex items-center justify-between py-4 text-text-dark cursor-pointer text-[13px] font-medium tracking-wide list-none select-none">
