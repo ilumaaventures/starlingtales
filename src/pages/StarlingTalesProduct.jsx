@@ -288,12 +288,15 @@ export default function StarlingTalesProduct() {
       return;
     }
 
-    addToCart({
-      ...origProduct,
-      source: "store",
-      storeName: "Starling Tales",
-      storeSlug: "starlingtales",
-    }, qty);
+    addToCart(
+      {
+        ...origProduct,
+        source: "store",
+        storeName: "Starling Tales",
+        storeSlug: "starlingtales",
+      },
+      qty,
+    );
     const remaining = availableStock - (currentCartQty + qty);
     toast.success(
       `${origProduct.name} added to cart! ${
@@ -363,9 +366,9 @@ export default function StarlingTalesProduct() {
         className="py-16 px-6 max-w-7xl mx-auto space-y-12"
         id="productheader"
       >
-        <div className="text-center space-y-3.5">
+        <div className="text-center space-y-3.5" id="productheader">
           <h1 className="text-4xl font-display font-semibold text-text-dark">
-            The Nursery Collection 
+            The Nursery Collection
           </h1>
           <div
             className="flex w-full max-w-[190px] items-center gap-3 text-blue-soft mx-auto"

@@ -323,7 +323,7 @@ export default function StarlingGiftHampers() {
         id="hamperheader"
         className="bg-gradient-to-b from-[#F7F3EB] via-cream to-cream px-6 pt-10 pb-12 text-center border-b border-[#E8DFC8]/40"
       >
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="max-w-3xl mx-auto space-y-4" id="hamper-header-content">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E8DFC8] text-[11px] font-bold tracking-[0.24em] uppercase text-text-dark shadow-2xs">
             <Gift size={13} className="text-gold" />
             <span>The Gifting Atelier</span>
