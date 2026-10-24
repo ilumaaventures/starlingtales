@@ -9,12 +9,6 @@ const DEFAULT_ANNOUNCEMENTS = [
     linkText: "",
     linkUrl: "",
   },
-  {
-    id: "calligraphy-gift",
-    text: "COMPLIMENTARY ARCHIVAL CALLIGRAPHY & WAX-SEALED GIFT NOTE WITH EVERY HAMPER",
-    linkText: "",
-    linkUrl: "",
-  },
 ];
 
 export default function StarlingAnnouncementBar() {
